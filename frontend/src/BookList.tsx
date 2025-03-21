@@ -7,11 +7,12 @@ function BookList() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [searchTitle, setSearchTitle] = useState<string>('');
 
   useEffect(() => {
     const fetchBooks = async () => {
       const response = await fetch(
-        `https://localhost:5000/api/Bookstore/AllBooks?pageSize=${pageSize}&currentPage=${currentPage}`
+        `https://localhost:5000/api/Bookstore/AllBooks?pageSize=${pageSize}&currentPage=${currentPage}&title=${searchTitle}`
       );
       const data = await response.json();
       setBooks(data.books);
@@ -20,11 +21,19 @@ function BookList() {
     };
 
     fetchBooks();
-  }, [pageSize, currentPage, totalCount]);
+  }, [pageSize, currentPage, totalCount, searchTitle]);
 
   return (
     <>
       <h1>Book List</h1>
+      <label>
+        Search by Title:
+        <input
+          type="text"
+          value={searchTitle}
+          onChange={(e) => setSearchTitle(e.target.value)}
+        />
+      </label>
       <br />
       {books.map((book) => (
         <div id="bookCard" className="card" key={book.bookId}>

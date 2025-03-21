@@ -12,25 +12,30 @@ namespace Bookstore.API.Controllers
         public BookstoreController(BookstoreDbContext context) => _context = context; // Constructor
 
         [HttpGet("AllBooks")]
-        public IActionResult GetBooks(int pageSize=5, int currentPage=1)
+        public IActionResult GetBooks(int pageSize = 5, int currentPage = 1, string? title = null)
         {
-            var books = _context.Books
+            var query = _context.Books.AsQueryable();
+
+            // Apply filter if title is provided
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                query = query.Where(b => b.Title.Contains(title));
+            }
+
+            var totalCount = query.Count(); // Count AFTER filtering
+
+            var books = query
                 .Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            var totalCount = _context.Books.Count();
-
-            var requestObject = new
+            var response = new
             {
                 Books = books,
                 TotalCount = totalCount
             };
 
-            return Ok(requestObject);
+            return Ok(response);
         }
-
-
-                
     }
 }
