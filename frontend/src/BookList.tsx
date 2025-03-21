@@ -4,18 +4,23 @@ import { Book } from './types/Book';
 function BookList() {
   const [books, setBooks] = useState<Book[]>([]);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   useEffect(() => {
     const fetchBooks = async () => {
       const response = await fetch(
-        `https://localhost:5000/api/Bookstore/AllBooks?pageSize=${pageSize}`
+        `https://localhost:5000/api/Bookstore/AllBooks?pageSize=${pageSize}&currentPage=${currentPage}`
       );
       const data = await response.json();
-      setBooks(data);
+      setBooks(data.books);
+      setTotalCount(data.totalCount);
+      setTotalPages(Math.ceil(totalCount / pageSize));
     };
 
     fetchBooks();
-  }, [pageSize]);
+  }, [pageSize, currentPage, totalCount]);
 
   return (
     <>
@@ -52,12 +57,39 @@ function BookList() {
         </div>
       ))}
 
+      <button
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage(currentPage - 1)}
+      >
+        Previous
+      </button>
+
+      {[...Array(totalPages)].map((_, i) => (
+        <button
+          key={i + 1}
+          disabled={currentPage === i + 1}
+          onClick={() => setCurrentPage(i + 1)}
+        >
+          {i + 1}
+        </button>
+      ))}
+
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage(currentPage + 1)}
+      >
+        Next
+      </button>
+
       <br />
       <label>
         Results per page:
         <select
           value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setCurrentPage(1);
+          }}
         >
           <option value="5">5</option>
           <option value="10">10</option>

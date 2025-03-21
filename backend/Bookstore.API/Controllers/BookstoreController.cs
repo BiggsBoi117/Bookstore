@@ -12,12 +12,22 @@ namespace Bookstore.API.Controllers
         public BookstoreController(BookstoreDbContext context) => _context = context; // Constructor
 
         [HttpGet("AllBooks")]
-        public IEnumerable<Book> GetBooks(int pageSize)
+        public IActionResult GetBooks(int pageSize=5, int currentPage=1)
         {
             var books = _context.Books
+                .Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            return books;
+
+            var totalCount = _context.Books.Count();
+
+            var requestObject = new
+            {
+                Books = books,
+                TotalCount = totalCount
+            };
+
+            return Ok(requestObject);
         }
 
 
