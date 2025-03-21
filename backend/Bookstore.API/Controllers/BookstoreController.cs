@@ -12,9 +12,11 @@ namespace Bookstore.API.Controllers
         public BookstoreController(BookstoreDbContext context) => _context = context; // Constructor
 
         [HttpGet("AllBooks")]
-        public IEnumerable<Book> GetBooks()
+        public IEnumerable<Book> GetBooks(int pageSize)
         {
-            var books = _context.Books.ToList();
+            var books = _context.Books
+                .Take(pageSize)
+                .ToList();
             return books;
         }
 
