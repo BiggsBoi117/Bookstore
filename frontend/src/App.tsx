@@ -1,31 +1,25 @@
-import { useState } from 'react';
 import './App.css';
-import BookList from './BookList';
-import CategoryFilter from './CategoryFilter';
-import WelcomeHeader from './WelcomeHeader';
-
+import AddConfirmPage from './pages/AddConfirmPage';
+import BookstorePage from './pages/BookstorePage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CartPage from './pages/CartPage';
+import { CartProvider } from './context/CartContext';
 function App() {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   return (
     <>
-      <div className="container">
-        <div className="row mb-3">
-          <WelcomeHeader />
-        </div>
-        <div className="row">
-          <div className="col-md-3">
-            <CategoryFilter
-              selectedCategories={selectedCategories}
-              setSelectedCategories={(selectedCategories) =>
-                setSelectedCategories(selectedCategories)
-              }
+      <CartProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<BookstorePage />} />
+            <Route path="/bookstore" element={<BookstorePage />} />
+            <Route
+              path="/addconfirm/:title/:bookId/:price"
+              element={<AddConfirmPage />}
             />
-          </div>
-          <div className="col-md-9">
-            <BookList selectedCategories={selectedCategories} />
-          </div>
-        </div>
-      </div>
+            <Route path="/cart" element={<CartPage />} />
+          </Routes>
+        </Router>
+      </CartProvider>
     </>
   );
 }

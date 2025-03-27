@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Book } from './types/Book';
+import { Book } from '../types/Book';
+import { useNavigate } from 'react-router-dom';
 
 function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<Book[]>([]);
@@ -8,6 +9,11 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [searchTitle, setSearchTitle] = useState<string>('');
+  const navigate = useNavigate();
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -34,9 +40,11 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         <input
           type="text"
           value={searchTitle}
+          className="form-control"
           onChange={(e) => setSearchTitle(e.target.value)}
         />
       </label>
+      <br />
       <br />
       {books.map((book) => (
         <div id="bookCard" className="card" key={book.bookId}>
@@ -65,13 +73,25 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
                 <strong>Price:</strong> {book.price}{' '}
               </li>
             </ul>
+
+            <button
+              className="btn btn-primary"
+              onClick={() =>
+                navigate(
+                  `/addconfirm/${book.title}/${book.bookId}/${book.price}`
+                )
+              }
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
       ))}
-
+      <br />
       <button
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(currentPage - 1)}
+        className="btn btn-primary"
       >
         Previous
       </button>
@@ -81,6 +101,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
           key={i + 1}
           disabled={currentPage === i + 1}
           onClick={() => setCurrentPage(i + 1)}
+          className="btn btn-primary"
         >
           {i + 1}
         </button>
@@ -89,10 +110,12 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
       <button
         disabled={currentPage === totalPages}
         onClick={() => setCurrentPage(currentPage + 1)}
+        className="btn btn-primary"
       >
         Next
       </button>
 
+      <br />
       <br />
       <label>
         Results per page:
@@ -102,12 +125,20 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
             setPageSize(Number(e.target.value));
             setCurrentPage(1);
           }}
+          className="form-select"
         >
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="15">15</option>
         </select>
       </label>
+      <br />
+      <br />
+      <div>
+        <button className="btn btn-primary" onClick={scrollToTop}>
+          Return to Top
+        </button>
+      </div>
     </>
   );
 }
