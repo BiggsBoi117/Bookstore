@@ -12,9 +12,15 @@ namespace Bookstore.API.Controllers
         public BookstoreController(BookstoreDbContext context) => _context = context; // Constructor
 
         [HttpGet("AllBooks")]
-        public IActionResult GetBooks(int pageSize = 5, int currentPage = 1, string? title = null)
+        public IActionResult GetBooks(int pageSize = 5, int currentPage = 1, string? title = null, [FromQuery] List<string>? categories = null)
         {
             var query = _context.Books.AsQueryable();
+
+            // Apply filter if categories are provided
+            if (categories != null)
+            {
+                query = query.Where(b => categories.Contains(b.Category));
+            }
 
             // Apply filter if title is provided
             if (!string.IsNullOrWhiteSpace(title))
@@ -37,5 +43,17 @@ namespace Bookstore.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("GetBookTypes")]
+        public IActionResult GetBookTypes()
+        {
+            var bookTypes = _context.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .ToList();
+
+            return Ok(bookTypes);
+        }
+
     }
 }
