@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Book } from '../types/Book';
 import { fetchBooks } from '../api/BooksAPI';
 import Pagination from '../components/Pagination';
-
+import NewBookForm from '../components/NewBookForm';
+import EditBookForm from '../components/EditBookForm';
 function AdminBooksPage({
   selectedCategories,
 }: {
@@ -15,6 +16,8 @@ function AdminBooksPage({
   const [searchTitle] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -49,6 +52,41 @@ function AdminBooksPage({
   return (
     <div>
       <h1>Admin - Books</h1>
+
+      {!showForm && (
+        <button
+          className="btn btn-success mb-3"
+          onClick={() => setShowForm(true)}
+        >
+          Add Book
+        </button>
+      )}
+
+      {showForm && (
+        <NewBookForm
+          onBookAdded={() => {
+            setShowForm(false);
+            fetchBooks(pageSize, currentPage, searchTitle, []).then((data) =>
+              setBooks(data.books)
+            );
+          }}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {editingBook && (
+        <EditBookForm
+          book={editingBook}
+          onBookAdded={() => {
+            setEditingBook(null);
+            fetchBooks(pageSize, currentPage, '', []).then((data) =>
+              setBooks(data.books)
+            );
+          }}
+          onCancel={() => setEditingBook(null)}
+        />
+      )}
+
       <table className="table table-bordered table-striped">
         <thead className="table-dark">
           <tr>
@@ -80,10 +118,7 @@ function AdminBooksPage({
                 <button
                   className="btn btn-primary btn-sm w-100 mb-2"
                   onClick={() => {
-                    console.log(
-                      'Edit button clicked for book ID:',
-                      book.bookId
-                    );
+                    setEditingBook(book);
                   }}
                 >
                   Edit

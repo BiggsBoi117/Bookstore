@@ -5,6 +5,8 @@ interface FetchBookResponse {
   totalCount: number;
 }
 
+const baseUrl = 'https://localhost:5000/api/Bookstore';
+
 export const fetchBooks = async (
   pageSize: number,
   currentPage: number,
@@ -17,7 +19,7 @@ export const fetchBooks = async (
       .join('&');
 
     const response = await fetch(
-      `https://localhost:5000/api/Bookstore/AllBooks?pageSize=${pageSize}&currentPage=${currentPage}&title=${searchTitle}${selectedCategories.length > 0 ? `&${categoryParams}` : ''}`
+      `${baseUrl}/AllBooks?pageSize=${pageSize}&currentPage=${currentPage}&title=${searchTitle}${selectedCategories.length > 0 ? `&${categoryParams}` : ''}`
     );
 
     if (!response.ok) {
@@ -27,6 +29,47 @@ export const fetchBooks = async (
     return await response.json();
   } catch (error) {
     console.error('Error fetching books:', error);
+    throw error;
+  }
+};
+
+export const addBook = async (book: Book): Promise<Book> => {
+  try {
+    const response = await fetch(`${baseUrl}/AddBook`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(book),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add book');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error adding book:', error);
+    throw error;
+  }
+};
+
+export const updateBook = async (
+  bookId: number,
+  updatedBook: Book
+): Promise<Book> => {
+  try {
+    const response = await fetch(`${baseUrl}/UpdateBook/${bookId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedBook),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating book:', error);
     throw error;
   }
 };

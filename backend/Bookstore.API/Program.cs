@@ -11,7 +11,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<BookstoreDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BookstoreConnection")));
 
-builder.Services.AddCors();
+builder.Services.AddCors(options => 
+    options.AddPolicy("AllowBookstore",
+    policy => {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    }));
 
 var app = builder.Build();
 
@@ -21,8 +27,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseCors(options => options
-    .WithOrigins("http://localhost:3000"));
+app.UseCors("AllowBookstore");
 
 app.UseHttpsRedirection();
 
