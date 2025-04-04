@@ -73,3 +73,17 @@ export const updateBook = async (
     throw error;
   }
 };
+
+export const deleteBook = async (bookId: number): Promise<void> => {
+  try {
+    const response = await fetch(`${baseUrl}/DeleteBook/${bookId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add book');
+    }
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    throw error;
+  }
+};

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Book } from '../types/Book';
-import { fetchBooks } from '../api/BooksAPI';
+import { deleteBook, fetchBooks } from '../api/BooksAPI';
 import Pagination from '../components/Pagination';
 import NewBookForm from '../components/NewBookForm';
 import EditBookForm from '../components/EditBookForm';
@@ -40,6 +40,20 @@ function AdminBooksPage({
 
     loadBooks();
   }, [pageSize, currentPage, searchTitle]);
+
+  const handleDelete = async (bookId: number) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this book?'
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteBook(bookId);
+      setBooks(books.filter((book) => book.bookId !== bookId));
+    } catch (error) {
+      alert('Failed to delete project. Please try again.');
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -126,10 +140,7 @@ function AdminBooksPage({
                 <button
                   className="btn btn-danger btn-sm w-100 mb-2"
                   onClick={() => {
-                    console.log(
-                      'Delete button clicked for book ID:',
-                      book.bookId
-                    );
+                    handleDelete(book.bookId);
                   }}
                 >
                   Delete
