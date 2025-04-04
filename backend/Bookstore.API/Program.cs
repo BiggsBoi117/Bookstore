@@ -11,13 +11,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<BookstoreDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BookstoreConnection")));
 
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options => {
     options.AddPolicy("AllowBookstore",
     policy => {
         policy.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
-    }));
+    });
+});
 
 var app = builder.Build();
 
