@@ -14,7 +14,7 @@ builder.Services.AddDbContext<BookstoreDbContext>(options =>
 builder.Services.AddCors(options => 
     options.AddPolicy("AllowBookstore",
     policy => {
-        policy.WithOrigins("http://localhost:3000")
+        policy.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
     }));
